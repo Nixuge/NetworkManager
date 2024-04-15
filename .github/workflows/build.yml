@@ -28,14 +28,6 @@ jobs:
       - name: Prepare Theos
         uses: Randomblock1/theos-action@v1
 
-    #   - name: Checkout SDKs
-    #     uses: actions/checkout@main
-    #     with:
-    #       repository: theos/sdks
-    #       ref: master
-    #       sparse-checkout: iPhoneOS16.5.sdk
-    #       path: $THEOS/sdks
-
       - name: Install CCSupport
         run: |
           git clone https://github.com/opa334/CCSupportTemplates.git $HOME/CCSupportTemplates
@@ -44,10 +36,15 @@ jobs:
           ./install.sh
           echo "Should be done installing CCSupport"
 
-      - name: Build package
+      - name: Build package (rootless)
         run: |
           rm -f packages/*
-          make package FINALPACKAGE=1 SYSROOT=$THEOS/sdks/iPhoneOS16.5.sdk
+          make package FINALPACKAGE=1 SYSROOT=$THEOS/sdks/iPhoneOS16.5.sdk THEOS_PACKAGE_SCHEME=rootless
+
+      - name: Build package (rootful)
+        run: |
+          rm -f packages/*
+          make package FINALPACKAGE=1 SYSROOT=$THEOS/sdks/iPhoneOS16.5.sdk THEOS_PACKAGE_SCHEME=rootful
 
       - name: Upload package
         uses: actions/upload-artifact@v3
