@@ -19,14 +19,20 @@ jobs:
 
       - name: Set up Theos
         run: |
-          git clone --recursive https://github.com/theos/theos.git /opt/theos
-          export THEOS=/opt/theos
+          git clone --recursive https://github.com/theos/theos.git $HOME/theos
+          export THEOS=$HOME/theos
           export PATH=$THEOS/bin:$PATH
 
       - name: Install Dependencies
         run: |
           brew update
           brew install dpkg
+
+      - name: Install CCSupport Headers
+        run: |
+          git clone https://github.com/Muirey03/CCSupport.git $HOME/CCSupport
+          export CCSUPPORT=$HOME/CCSupport
+          export CPATH=$CCSUPPORT/include:$CPATH
 
       - name: Build Tweak
         run: make package
