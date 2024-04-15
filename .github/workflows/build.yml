@@ -28,13 +28,13 @@ jobs:
       - name: Prepare Theos
         uses: Randomblock1/theos-action@v1
 
-      - name: Checkout SDKs
-        uses: actions/checkout@main
-        with:
-          repository: theos/sdks
-          ref: master
-          sparse-checkout: iPhoneOS16.5.sdk
-          path: $THEOS/sdks
+    #   - name: Checkout SDKs
+    #     uses: actions/checkout@main
+    #     with:
+    #       repository: theos/sdks
+    #       ref: master
+    #       sparse-checkout: iPhoneOS16.5.sdk
+    #       path: $THEOS/sdks
 
       - name: Install CCSupport
         run: |
@@ -47,7 +47,7 @@ jobs:
       - name: Build package
         run: |
           rm -f packages/*
-          make package FINALPACKAGE=1 SYSROOT=$(THEOS)/sdks/iPhoneOS16.5.sdk
+          make package FINALPACKAGE=1 SYSROOT=$THEOS/sdks/iPhoneOS16.5.sdk
 
       - name: Upload package
         uses: actions/upload-artifact@v3
