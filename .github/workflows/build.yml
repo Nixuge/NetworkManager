@@ -28,6 +28,13 @@ jobs:
           sparse-checkout: iPhoneOS16.5.sdk
           path: theos/sdks
 
+      - name: Install CCSupport
+        run: |
+          git clone https://github.com/opa334/CCSupportTemplates.git $HOME/CCSupportTemplates
+          cd $HOME/CCSupportTemplates/
+          chmod +x install.sh
+          ./install.sh
+        
       - name: Install dependencies
         run: brew install make xz ldid
 
@@ -64,6 +71,13 @@ jobs:
           ref: master
           sparse-checkout: iPhoneOS14.5.sdk
           path: theos/sdks
+
+      - name: Install CCSupport
+        run: |
+          git clone https://github.com/opa334/CCSupportTemplates.git $HOME/CCSupportTemplates
+          cd $HOME/CCSupportTemplates/
+          chmod +x install.sh
+          ./install.sh
 
       - name: Install dependencies
         run: brew install make xz ldid
