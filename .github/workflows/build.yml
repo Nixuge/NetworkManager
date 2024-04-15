@@ -1,51 +1,78 @@
-name: Build iOS Tweak with Theos
+name: Build
 
 on: [push]
-
-jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest]
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: true
-
-      - name: Check cache
-        run: |
-          echo upstream_heads=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/theos/sdks | head -n 1 | cut -f 1` >> $GITHUB_ENV
-
-      - name: Use cache
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ github.workspace }}/theos
-          key: ${{ runner.os }}-${{ env.upstream_heads }}
-
-      - name: Prepare Theos
-        uses: Randomblock1/theos-action@v1
-
-      - name: Install CCSupport
-        run: |
-          git clone https://github.com/opa334/CCSupportTemplates.git $HOME/CCSupportTemplates
-          cd $HOME/CCSupportTemplates/
-          chmod +x install.sh
-          ./install.sh
     
-      - name: Yoink out Prefix.pch
-        run: |
-          echo "" > $THEOS/Prefix.pch 
+jobs:
+  build-rootless:
+    runs-on: macos-13
+    steps:
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+            
+      - uses: actions/checkout@main
 
-      - name: Build package
-        run: |
-          rm -f packages/*
-          make package FINALPACKAGE=1
+      - name: Checkout theos/theos
+        uses: actions/checkout@main
+        with:
+          repository: theos/theos
+          ref: master
+          submodules: recursive
+          path: theos
 
-      - name: Upload package
+      - name: Checkout SDKs
+        uses: actions/checkout@main
+        with:
+          repository: theos/sdks
+          ref: master
+          sparse-checkout: iPhoneOS16.5.sdk
+          path: theos/sdks
+
+      - name: Install dependencies
+        run: brew install make xz ldid
+
+      - name: Build package (rootless)
+        run: THEOS=theos gmake clean package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+
+      - name: Upload a Build Artifact (rootless)
         uses: actions/upload-artifact@v3
         with:
-          name: "Package built by ${{ matrix.os }}"
-          path: ${{ github.workspace }}/packages/*.deb
+          name: packages iphoneos-arm64 (rootless)
+          path: packages/*_iphoneos-arm64.deb
+
+  build-rootful:
+    runs-on: macos-11
+    steps:
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '11.7'
+            
+      - uses: actions/checkout@main
+
+      - name: Checkout theos/theos
+        uses: actions/checkout@main
+        with:
+          repository: theos/theos
+          ref: master
+          submodules: recursive
+          path: theos
+
+      - name: Checkout SDKs
+        uses: actions/checkout@main
+        with:
+          repository: theos/sdks
+          ref: master
+          sparse-checkout: iPhoneOS14.5.sdk
+          path: theos/sdks
+
+      - name: Install dependencies
+        run: brew install make xz ldid
+
+      - name: Build package (rootful)
+        run: THEOS=theos gmake clean package FINALPACKAGE=1
+
+      - name: Upload a Build Artifact (rootful)
+        uses: actions/upload-artifact@v3
+        with:
+          name: packages iphoneos-arm (rootful)
+          path: packages/*_iphoneos-arm.deb
