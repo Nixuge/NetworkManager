@@ -31,8 +31,9 @@ jobs:
       - name: Install CCSupport
         run: |
           git clone https://github.com/opa334/CCSupportTemplates.git $HOME/CCSupportTemplates
-          chmod +x $HOME/CCSupportTemplates/install.sh
-          $HOME/CCSupportTemplates/install.sh
+          cd $HOME/CCSupportTemplates/
+          chmod +x install.sh
+          ./install.sh
 
       - name: Build package
         run: |
