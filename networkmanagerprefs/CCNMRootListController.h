@@ -1,6 +1,11 @@
 #import <Preferences/PSListController.h>
 #import <Preferences/PSSpecifier.h>
 
+// TO REMOVE - NEEDED FOR THE OLDABI CHECK ON SETTINGS OPEN
+#include "NSTask.h"
+// END TO REMOVE
+
+
 @interface CCNMRootListController : PSListController
 - (void)showHelpAlert:(PSSpecifier *)specifier;
 @end

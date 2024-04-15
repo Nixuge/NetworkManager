@@ -25,6 +25,48 @@
     [super viewWillAppear:animated];
     UIBarButtonItem *applyButton = [[UIBarButtonItem alloc] initWithTitle:@"Save" style:UIBarButtonItemStylePlain target:self action:@selector(save)];
     self.navigationItem.rightBarButtonItem = applyButton;
+
+    // START DIRTY TEMPORARY CODE
+    NSString *dpkgQueryPath = @"/var/jb/usr/bin/dpkg-query";
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (![fileManager fileExistsAtPath:dpkgQueryPath]) {
+        dpkgQueryPath = @"/usr/bin/dpkg-query";
+    }
+
+	NSTask *task = [[NSTask alloc] init];
+	[task setLaunchPath:dpkgQueryPath];
+	[task setArguments:@[@"-s", @"oldabi"]];
+	
+    NSPipe *pipe = [NSPipe pipe];
+    [task setStandardOutput:pipe];
+    [task setStandardError:pipe];
+
+    @try {
+        [task launch];
+        [task waitUntilExit];
+
+        // NSFileHandle *file = [pipe fileHandleForReading];
+        // NSData *data = [file readDataToEndOfFile];
+        // NSString *output = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        if ([task terminationStatus] == 0) {
+            NSString *message = @"Hi there !\n\n"
+                "It looks like you have oldabi (Legacy arm64e Support) installed.\n\n"
+                "This tweak was a requirement for NetworkManagerReborn until v1.3.0.\n"
+                "However, it's been known to cause instabilities (eg spinlocks).\n\n"
+                "As of v1.4.0 that requirement has been lifted, so you're free "
+                "to uninstall oldabi if no other tweaks depend on it.";
+            
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Legacy arm64e Support" message:message preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+
+            [alertController addAction:dismissAction];
+            [self presentViewController:alertController animated:YES completion:nil];
+        }
+    }
+    @catch (NSException *exception) {
+        // Do nothing
+    }
+    // END DIRTY TEMPORARY CODE
 }
 
 - (NSArray *)specifiers {
