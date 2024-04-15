@@ -7,7 +7,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest]
+        os: [macos-11]
 
     steps:
       - uses: actions/checkout@v3
@@ -36,12 +36,6 @@ jobs:
           ./install.sh
           echo "Should be done installing CCSupport"
       
-      - name: Dirty check to make sure ld is installed
-        run: |
-          echo "testing1"
-          echo $(ld)
-          echo "testing2"
-
       - name: Build package (rootless)
         run: |
           rm -f packages/*
