@@ -47,7 +47,7 @@ jobs:
       - name: Build package
         run: |
           rm -f packages/*
-          make package FINALPACKAGE=1
+          make package FINALPACKAGE=1 SYSROOT=$(THEOS)/sdks/iPhoneOS16.5.sdk
 
       - name: Upload package
         uses: actions/upload-artifact@v3
