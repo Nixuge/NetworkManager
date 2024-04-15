@@ -35,6 +35,12 @@ jobs:
           chmod +x install.sh
           ./install.sh
           echo "Should be done installing CCSupport"
+      
+      - name: Dirty check to make sure ld is installed
+        run: |
+          echo "testing1"
+          echo $(ld)
+          echo "testing2"
 
       - name: Build package (rootless)
         run: |
