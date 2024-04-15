@@ -28,6 +28,12 @@ jobs:
       - name: Prepare Theos
         uses: Randomblock1/theos-action@v1
 
+      - name: Install CCSupport
+        run: |
+          git clone https://github.com/opa334/CCSupportTemplates.git $HOME/CCSupportTemplates
+          chmod +x $HOME/CCSupportTemplates/install.sh
+          $HOME/CCSupportTemplates/install.sh
+
       - name: Build package
         run: |
           rm -f packages/*
