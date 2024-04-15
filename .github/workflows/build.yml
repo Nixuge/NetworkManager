@@ -7,7 +7,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-latest]
 
     steps:
       - uses: actions/checkout@v3
@@ -42,6 +42,7 @@ jobs:
           cd $HOME/CCSupportTemplates/
           chmod +x install.sh
           ./install.sh
+          echo "Should be done installing CCSupport"
 
       - name: Build package
         run: |
