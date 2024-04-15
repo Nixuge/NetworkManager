@@ -1,38 +1,40 @@
 name: Build iOS Tweak with Theos
 
-on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+on: [push]
 
 jobs:
   build:
-    name: Build Tweak
-    runs-on: macos-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
 
-      - name: Set up Theos
+      - name: Check cache
         run: |
-          git clone --recursive https://github.com/theos/theos.git $HOME/theos
-          export THEOS=$HOME/theos
-          export PATH=$THEOS/bin:$PATH
+          echo upstream_heads=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/theos/sdks | head -n 1 | cut -f 1` >> $GITHUB_ENV
 
-      - name: Install Dependencies
+      - name: Use cache
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/theos
+          key: ${{ runner.os }}-${{ env.upstream_heads }}
+
+      - name: Prepare Theos
+        uses: Randomblock1/theos-action@v1
+
+      - name: Build package
         run: |
-          brew update
-          brew install dpkg
+          rm -f packages/*
+          make package FINALPACKAGE=1
 
-    #   - name: Install CCSupport Headers
-    #     run: |
-    #       git clone https://github.com/opa334/CCSupport.git $HOME/CCSupport
-    #       export CCSUPPORT=$HOME/CCSupport
-    #       export CPATH=$CCSUPPORT/include:$CPATH
-
-      - name: Build Tweak
-        run: make package
+      - name: Upload package
+        uses: actions/upload-artifact@v3
+        with:
+          name: "Package built by ${{ matrix.os }}"
+          path: ${{ github.workspace }}/packages/*.deb
