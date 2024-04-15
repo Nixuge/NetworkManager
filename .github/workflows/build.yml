@@ -7,7 +7,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-11]
+        os: [macos-latest]
 
     steps:
       - uses: actions/checkout@v3
@@ -36,18 +36,18 @@ jobs:
           ./install.sh
           echo "Should be done installing CCSupport"
       
-      # - name: Build package (rootless)
-      #   run: |
-      #     rm -f packages/*
-      #     make package FINALPACKAGE=1 SYSROOT=$THEOS/sdks/iPhoneOS16.5.sdk THEOS_PACKAGE_SCHEME=rootless
-
-      - name: Build package (rootful)
+      - name: Build package (rootless)
         run: |
           rm -f packages/*
-          make package FINALPACKAGE=1 SYSROOT=$THEOS/sdks/iPhoneOS16.5.sdk THEOS_PACKAGE_SCHEME=rootful
+          make package FINALPACKAGE=1 SYSROOT=$THEOS/sdks/iPhoneOS16.5.sdk THEOS_PACKAGE_SCHEME=rootless
+
+      # - name: Build package (rootful)
+      #   run: |
+      #     rm -f packages/*
+      #     make package FINALPACKAGE=1 SYSROOT=$THEOS/sdks/iPhoneOS16.5.sdk THEOS_PACKAGE_SCHEME=rootful
 
       - name: Upload package
         uses: actions/upload-artifact@v3
         with:
-          name: "Package built by ${{ matrix.os }}"
+          name: "NetworkManagerReborn builds (${{ matrix.os }})"
           path: ${{ github.workspace }}/packages/*.deb
