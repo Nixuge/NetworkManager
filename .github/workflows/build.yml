@@ -28,11 +28,11 @@ jobs:
           brew update
           brew install dpkg
 
-      - name: Install CCSupport Headers
-        run: |
-          git clone https://github.com/Muirey03/CCSupport.git $HOME/CCSupport
-          export CCSUPPORT=$HOME/CCSupport
-          export CPATH=$CCSUPPORT/include:$CPATH
+    #   - name: Install CCSupport Headers
+    #     run: |
+    #       git clone https://github.com/opa334/CCSupport.git $HOME/CCSupport
+    #       export CCSUPPORT=$HOME/CCSupport
+    #       export CPATH=$CCSUPPORT/include:$CPATH
 
       - name: Build Tweak
         run: make package
