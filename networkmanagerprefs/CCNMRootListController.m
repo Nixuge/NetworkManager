@@ -266,7 +266,12 @@
 		version.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
         [version setFont:[UIFont systemFontOfSize:15]];
 		version.textColor = [UIColor colorWithRed:0.82 green:0.82 blue:0.84 alpha:1.0];
-		version.text = @"Version 1.3";
+
+        // For future reference (not really important here), could use either:
+        // - %s and NETWORK_MANAGER_VERSION (Cstring) -> no perf impact but cant handle eg unicode & crashes if undefined macro
+        // - %@ and @NETWORK_MANAGER_VERSION (NSString) -> slight perf impact (new obj) but can handle unicode & empty string if undefined macro
+		version.text = [NSString stringWithFormat:@"Version %@", @(NETWORK_MANAGER_VERSION)];
+
 		version.backgroundColor = [UIColor clearColor];
 		version.textAlignment = NSTextAlignmentCenter;
 
